@@ -576,13 +576,16 @@ public:
         if (p1 != nullptr) {
             current->next = p1;
             p1->prev = current;
-            // tail is the original tail of this list
+            // The tail is the original tail of this list
             tail = this->tail;
-        } else {
+        } else if (p2 != nullptr) {
             current->next = p2;
             p2->prev = current;
-            // tail is the original tail of other list
+            // The tail is the original tail of other list
             tail = other.tail;
+        } else {
+            // Both lists exhausted, current is the tail
+            tail = current;
         }
 
         // Update head and size
