@@ -513,11 +513,14 @@ public:
     void sort() {
         if (listSize <= 1) return;
 
-        // Convert list to array for sorting
-        T *arr = new T[listSize];
+        // Allocate raw memory for array
+        void *rawMemory = operator new[](listSize * sizeof(T));
+        T *arr = static_cast<T*>(rawMemory);
+
+        // Copy elements to array using placement new
         size_t i = 0;
         for (iterator it = begin(); it != end(); ++it) {
-            arr[i++] = *it;
+            new (&arr[i++]) T(*it);
         }
 
         // Use sjtu::sort
@@ -532,7 +535,11 @@ public:
             *it = arr[i++];
         }
 
-        delete[] arr;
+        // Destroy array elements and free memory
+        for (size_t j = 0; j < listSize; ++j) {
+            arr[j].~T();
+        }
+        operator delete[](rawMemory);
     }
     /**
      * merge two sorted lists into one (both in ascending order)
